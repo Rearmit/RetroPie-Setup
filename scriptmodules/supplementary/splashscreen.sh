@@ -13,7 +13,7 @@ rp_module_id="splashscreen"
 rp_module_desc="Configure Splashscreen"
 rp_module_section="main"
 rp_module_repo="git https://github.com/RetroPie/retropie-splashscreens.git master"
-rp_module_flags="noinstclean !all rpi !osmc !xbian !aarch64"
+rp_module_flags=""
 
 function _update_hook_splashscreen() {
     # make sure splashscreen is always up to date if updating just RetroPie-Setup
@@ -32,8 +32,7 @@ function _video_exts_splashscreen() {
 }
 
 function depends_splashscreen() {
-    local params=(insserv)
-    isPlatform "32bit" && params+=(omxplayer)
+    local params=(fbi vorbis-tools mplayer)
     getDepends "${params[@]}"
 }
 
@@ -229,7 +228,6 @@ function preview_splashscreen() {
 
     local path
     local file
-    local omxiv="/opt/retropie/supplementary/omxiv/omxiv"
     while true; do
         local cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option." 22 86 16)
         local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
@@ -241,13 +239,13 @@ function preview_splashscreen() {
                 1)
                     file=$(choose_splashscreen "$path" "image")
                     [[ -z "$file" ]] && break
-                    $omxiv -b "$file"
+                    fbi --noverbose --autozoom "$file"
                     ;;
                 2)
                     file=$(mktemp)
                     find "$path" -type f ! -regex ".*/\..*" ! -regex ".*LICENSE" ! -regex ".*README.*" ! -regex ".*\.sh" | sort > "$file"
                     if [[ -s "$file" ]]; then
-                        $omxiv -t 6 -T blend -b --once -f "$file"
+                        fbi --timeout 6 --once --autozoom --list "$file"
                     else
                         printMsgs "dialog" "There are no splashscreens installed in $path"
                     fi
@@ -257,7 +255,7 @@ function preview_splashscreen() {
                 3)
                     file=$(choose_splashscreen "$path" "video")
                     [[ -z "$file" ]] && break
-                    omxplayer --no-osd -b --layer 10000 "$file"
+                    mplayer -vo sdl -fs "$file"
                     ;;
             esac
         done
