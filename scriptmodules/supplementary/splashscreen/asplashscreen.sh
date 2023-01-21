@@ -43,7 +43,7 @@ do_start () {
         while ! pgrep "dbus" >/dev/null; do
             sleep 1
         done
-        omxplayer --no-osd -o both -b --layer 10000 "$line"
+        mplayer -vo sdl -fs "$file"
     elif $(echo "$line" | grep -q "$REGEX_IMAGE"); then
         if [ "$RANDOMIZE" = "disabled" ]; then
             local count=$(wc -l <"$config")
@@ -57,9 +57,11 @@ do_start () {
         [ -z "$DURATION" ] && DURATION=12
         local delay=$((DURATION/count))
         if [ "$RANDOMIZE" = "disabled" ]; then
-            "$omxiv" --once -t $delay -b --layer 1000 -f "$config" >/dev/null 2>&1
+            fbi -T 2 -once -t $delay -noverbose -a -l "$config" >/dev/null 2>&1
+	        mplayer -vo sdl -fs /home/pi/RetroPie/splashscreens/bootsnd.ogg &
         else
-            "$omxiv" --once -t $delay -b --layer 1000 -r "$line" >/dev/null 2>&1
+            fbi -T 2 -once -t $delay -noverbose -a "$line" >/dev/null 2>&1
+	        mplayer -vo sdl -fs /home/pi/RetroPie/splashscreens/bootsnd.ogg &
         fi
     fi
     exit 0
