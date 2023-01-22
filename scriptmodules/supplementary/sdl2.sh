@@ -17,7 +17,7 @@ rp_module_flags=""
 
 function get_ver_sdl2() {
     if isPlatform "armbian"; then
-    	echo "2.0.20"
+    	echo "2.26.2"
     else
         echo "2.0.10"
     fi
