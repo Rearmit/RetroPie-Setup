@@ -43,9 +43,10 @@ function _get_repos_mupen64plus() {
     if isPlatform "gles"; then
         ! isPlatform "rpi" && repos+=('mupen64plus mupen64plus-video-glide64mk2 master')
         if isPlatform "32bit"; then
-            repos+=('ricrpi mupen64plus-video-gles2rice pandora-backport')
+            ! isPlatform "armbian" && repos+=('ricrpi mupen64plus-video-gles2rice pandora-backport')
             repos+=('ricrpi mupen64plus-video-gles2n64 master')
         fi
+        isPlatform "armbian" && repos+=('mupen64plus mupen64plus-video-rice master')
     fi
     if isPlatform "gl"; then
         repos+=(
@@ -161,7 +162,7 @@ function build_mupen64plus() {
             params=()
             isPlatform "rpi1" && params+=("VFP=1" "VFP_HARD=1")
             isPlatform "videocore" || [[ "$dir" == "mupen64plus-audio-omx" ]] && params+=("VC=1")
-            if isPlatform "mesa" || isPlatform "mali"; then
+            if isPlatform "mesa" || isPlatform "mali" || isPlatform "armbian"; then
                 params+=("USE_GLES=1")
             fi
             isPlatform "neon" && params+=("NEON=1")
@@ -187,6 +188,7 @@ function build_mupen64plus() {
     params=("-DMUPENPLUSAPI=On" "-DVEC4_OPT=On" "-DUSE_SYSTEM_LIBS=On")
     isPlatform "neon" && params+=("-DNEON_OPT=On")
     isPlatform "mesa" && params+=("-DMESA=On" "-DEGL=On")
+    isPlatform "armbian" && params+=("-DMESA=On" "-DEGL=On")
     isPlatform "vero4k" && params+=("-DVERO4K=On")
     isPlatform "armv8" && params+=("-DCRC_ARMV8=On")
     isPlatform "mali" && params+=("-DVERO4K=On" "-DCRC_OPT=On" "-DEGL=On")
@@ -213,9 +215,10 @@ function build_mupen64plus() {
     if isPlatform "gles"; then
         ! isPlatform "rpi" && md_ret_require+=('mupen64plus-video-glide64mk2/projects/unix/mupen64plus-video-glide64mk2.so')
         if isPlatform "32bit"; then
-            md_ret_require+=('mupen64plus-video-gles2rice/projects/unix/mupen64plus-video-rice.so')
+            ! isPlatform "armbian" && md_ret_require+=('mupen64plus-video-gles2rice/projects/unix/mupen64plus-video-rice.so')
             md_ret_require+=('mupen64plus-video-gles2n64/projects/unix/mupen64plus-video-n64.so')
         fi
+        isPlatform "armbian" && md_ret_require+=('mupen64plus-video-rice/projects/unix/mupen64plus-video-rice.so')
     fi
     if isPlatform "gl"; then
         md_ret_require+=(
@@ -293,12 +296,13 @@ function configure_mupen64plus() {
         addEmulator 0 "${md_id}-gles2rice" "n64" "$md_inst/bin/mupen64plus.sh mupen64plus-video-rice %ROM%"
         addEmulator 0 "${md_id}-auto" "n64" "$md_inst/bin/mupen64plus.sh AUTO %ROM%"
     else
-        addEmulator 0 "${md_id}-GLideN64" "n64" "$md_inst/bin/mupen64plus.sh mupen64plus-video-GLideN64 %ROM% $res"
+        ! isPlatform "armbian" && addEmulator 0 "${md_id}-GLideN64" "n64" "$md_inst/bin/mupen64plus.sh mupen64plus-video-GLideN64 %ROM% $res"
         addEmulator 1 "${md_id}-glide64" "n64" "$md_inst/bin/mupen64plus.sh mupen64plus-video-glide64mk2 %ROM% $res"
         if isPlatform "x86"; then
             ! isPlatform "kms" && res="640x480"
             addEmulator 0 "${md_id}-GLideN64-LLE" "n64" "$md_inst/bin/mupen64plus.sh mupen64plus-video-GLideN64 %ROM% $res mupen64plus-rsp-cxd4-sse2"
         fi
+        isPlatform "armbian" && addEmulator 0 "${md_id}-rice" "n64" "$md_inst/bin/mupen64plus.sh mupen64plus-video-rice %ROM% %XRES%x%YRES%"
     fi
     addSystem "n64"
 
@@ -387,6 +391,45 @@ function configure_mupen64plus() {
     else
         addAutoConf mupen64plus_audio 0
         addAutoConf mupen64plus_compatibility_check 0
+    fi
+
+if isPlatform "armbian"; then
+        iniConfig " = " "" "$config"
+        if ! grep -q "\[Video-General\]" "$config"; then
+            echo "[Video-General]" >> "$config"
+        fi
+        iniSet "VerticalSync" "True"
+        # Create GlideN64 section in .cfg
+        if ! grep -q "\[Video-GLideN64\]" "$config"; then
+            echo "[Video-GLideN64]" >> "$config"
+        fi
+        # Settings version. Don't touch it.
+        iniSet "configVersion" "17"
+        # Bilinear filtering mode (0=N64 3point, 1=standard)
+        iniSet "bilinearMode" "1"
+        iniSet "EnableFBEmulation" "True"
+        # Use native res
+        iniSet "UseNativeResolutionFactor" "1"
+        # Enable legacy blending
+        iniSet "EnableLegacyBlending" "True"
+        # Enable Threaded GL calls
+        iniSet "ThreadedVideo" "True"
+        # Swap frame buffers On buffer update (most performant)
+        iniSet "BufferSwapMode" "2"
+        # Disable hybrid upscaling filter (needs better GPU)
+        iniSet "EnableHybridFilter" "False"
+        # Use fast but less accurate shaders. Can help with low-end GPUs.
+        iniSet "EnableInaccurateTextureCoordinates" "True"
+        if ! grep -q "\[Video-General\]" "$config"; then
+            echo "[Video-General]" >> "$config"
+        fi
+        iniSet "VerticalSync" "True"
+        # Create Video-Rice section in .cfg
+        if ! grep -q "\[Video-Rice\]" "$config"; then
+            echo "[Video-Rice]" >> "$config"
+        fi
+        iniSet "ScreenUpdateSetting" "7"
+        iniSet "NormalAlphaBlender" "True"
     fi
 
     addAutoConf mupen64plus_hotkeys 1
