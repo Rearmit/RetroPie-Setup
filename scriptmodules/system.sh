@@ -315,6 +315,7 @@ function get_os_version() {
 
     # configure Raspberry Pi graphics stack
     isPlatform "rpi" && get_rpi_video
+    isPlatform "armbian" && get_armbian_video
 }
 
 function get_retropie_depends() {
@@ -409,91 +410,124 @@ function get_rpi_model() {
         esac
     fi
 }
+
+function get_armbian_video() {
+    if [[ -z "$__has_kms" ]]; then
+         __has_kms=1
+    fi
+
+    if [[ "$__has_kms" -eq 1 ]]; then
+        __platform_flags+=(mesa kms)
+    fi
+}
+
+function get_armbian_model() {
+    source /etc/armbian-release
+    case "$BOARDFAMILY" in
+        "rockchip64")
+            __platform="rockchip64"
+            ;;
+        "sun50iw6")
+            __platform="sun50iw6"
+            ;;
+        "sun50iw9")
+            __platform="sun50iw9"
+            ;;
+        "sun8i")
+            __platform="sun8i"
+            ;;
+    esac
+}
+
 function get_platform() {
     local architecture="$(uname --machine)"
     if [[ -z "$__platform" ]]; then
-        case "$(sed -n '/^Hardware/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo)" in
-            BCM*)
-                # RPI kernels before 2023-11-24 print a 'Hardware: BCM2835' line
-                get_rpi_model
-                ;;
-            *ODROIDC)
-                __platform="odroid-c1"
-                ;;
-            *ODROID-C2)
-                __platform="odroid-c2"
-                ;;
-            "Freescale i.MX6 Quad/DualLite (Device Tree)")
-                __platform="imx6"
-                ;;
-            *ODROID-XU[34])
-                __platform="odroid-xu"
-                ;;
-            "Rockchip (Device Tree)")
-                __platform="tinker"
-                ;;
-            Vero4K|Vero4KPlus)
-                __platform="vero4k"
-                ;;
-            "Allwinner sun8i Family")
-                __platform="armv7-mali"
-                ;;
-            *)
-                # jetsons can be identified by device tree or soc0/family (depending on the L4T version used)
-                # refer to the nv.sh script in the L4T DTS for a similar implementation
-                if [[ -e "/proc/device-tree/compatible" ]]; then
-                    case "$(tr -d '\0' < /proc/device-tree/compatible)" in
-                        *raspberrypi*)
-                            get_rpi_model
-                            ;;
-                        *tegra186*)
-                            __platform="tegra-x2"
-                            ;;
-                        *tegra210*)
-                            __platform="tegra-x1"
-                            ;;
-                        *tegra194*)
-                            __platform="xavier"
-                            ;;
-                        *rockpro64*)
-                            __platform="rockpro64"
-                            ;;
-                        *imx6dl*)
-                            __platform="imx6"
-                            ;;
-                        *imx6q*)
-                            __platform="imx6"
-                            ;;
-                        *imx8mm*)
-                            __platform="imx8mm"
-                            ;;
-                        *rk3588*)
-                            __platform="rk3588"
-                            ;;
-                    esac
-                elif [[ -e "/sys/devices/soc0/family" ]]; then
-                    case "$(tr -d '\0' < /sys/devices/soc0/family)" in
-                        *tegra30*)
-                            __platform="tegra-3"
-                            ;;
-                        *tegra114*)
-                            __platform="tegra-4"
-                            ;;
-                        *tegra124*)
-                            __platform="tegra-k1-32"
-                            ;;
-                        *tegra132*)
-                            __platform="tegra-k1-64"
-                            ;;
-                        *tegra210*)
-                            __platform="tegra-x1"
-                            ;;
-                    esac
-                else
-                    __platform="$architecture"
-                fi
-                ;;
-        esac
+        if [[ -f /etc/armbian-release ]]; then
+            get_armbian_model
+        else
+            case "$(sed -n '/^Hardware/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo)" in
+                BCM*)
+                    # RPI kernels before 2023-11-24 print a 'Hardware: BCM2835' line
+                    get_rpi_model
+                    ;;
+                *ODROIDC)
+                    __platform="odroid-c1"
+                    ;;
+                *ODROID-C2)
+                    __platform="odroid-c2"
+                    ;;
+                "Freescale i.MX6 Quad/DualLite (Device Tree)")
+                    __platform="imx6"
+                    ;;
+                *ODROID-XU[34])
+                    __platform="odroid-xu"
+                    ;;
+                "Rockchip (Device Tree)")
+                    __platform="tinker"
+                    ;;
+                Vero4K|Vero4KPlus)
+                    __platform="vero4k"
+                    ;;
+                "Allwinner sun8i Family")
+                    __platform="armv7-mali"
+                    ;;
+                *)
+                    # jetsons can be identified by device tree or soc0/family (depending on the L4T version used)
+                    # refer to the nv.sh script in the L4T DTS for a similar implementation
+                    if [[ -e "/proc/device-tree/compatible" ]]; then
+                        case "$(tr -d '\0' < /proc/device-tree/compatible)" in
+                            *raspberrypi*)
+                                get_rpi_model
+                                ;;
+                            *tegra186*)
+                                __platform="tegra-x2"
+                                ;;
+                            *tegra210*)
+                                __platform="tegra-x1"
+                                ;;
+                            *tegra194*)
+                                __platform="xavier"
+                                ;;
+                            *rockpro64*)
+                                __platform="rockpro64"
+                                ;;
+                            *imx6dl*)
+                                __platform="imx6"
+                                ;;
+                            *imx6q*)
+                                __platform="imx6"
+                                ;;
+                            *imx8mm*)
+                                __platform="imx8mm"
+                                ;;
+                            *rk3588*)
+                                __platform="rk3588"
+                                ;;
+                        esac
+                    elif [[ -e "/sys/devices/soc0/family" ]]; then
+                        case "$(tr -d '\0' < /sys/devices/soc0/family)" in
+                            *tegra30*)
+                                __platform="tegra-3"
+                                ;;
+                            *tegra114*)
+                                __platform="tegra-4"
+                                ;;
+                            *tegra124*)
+                                __platform="tegra-k1-32"
+                                ;;
+                            *tegra132*)
+                                __platform="tegra-k1-64"
+                                ;;
+                            *tegra210*)
+                                __platform="tegra-x1"
+                                ;;
+                        esac
+                    else
+                        __platform="$architecture"
+                    fi
+                    ;;
+            esac
+        fi
     fi
 
     # check if we wish to target kms for platform
@@ -685,6 +719,26 @@ function platform_imx8mm() {
 function platform_rk3588() {
     cpu_armv8 "cortex-a76.cortex-a55"
     __platform_flags+=(x11 gles gles3 gles32)
+}
+
+function platform_rockchip64() {
+    cpu_armv8 "cortex-a72.cortex-a53"
+    __platform_flags+=(gles gles3 gles31)
+}
+
+function platform_sun50iw6() {
+    cpu_armv8 "cortex-a53"
+    __platform_flags+=(gles)
+}
+
+function platform_sun50iw9() {
+    cpu_armv8 "cortex-a53"
+    __platform_flags+=(gles)
+}
+
+function platform_sun8i() {
+    cpu_armv7 "cortex-a7"
+    __platform_flags+=(gles)
 }
 
 function platform_vero4k() {
