@@ -46,7 +46,6 @@ function test_chroot() {
     fi
 }
 
-
 function conf_memory_vars() {
     __memory_total_kb=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
     __memory_total=$(( __memory_total_kb / 1024 ))
@@ -425,7 +424,24 @@ function get_armbian_model() {
     source /etc/armbian-release
     case "$BOARDFAMILY" in
         "rockchip64")
-            __platform="rockchip64"
+            case "$BOOT_SOC" in
+                "rk3399")
+                __platform="rk3399"
+                ;;
+            esac
+            ;;
+        "rk35xx")
+            case "BOOT_SOC" in
+                "rk3566")
+                __platform="rk3566"
+                ;;
+                "rk3588")
+                __platform="rk3588"
+                ;;
+            esac
+            ;;
+        "sun50iw2")
+            __platform="sun50iw2"
             ;;
         "sun50iw6")
             __platform="sun50iw6"
@@ -718,22 +734,36 @@ function platform_imx8mm() {
 
 function platform_rk3588() {
     cpu_armv8 "cortex-a76.cortex-a55"
-    __platform_flags+=(x11 gles gles3 gles32)
+    if isPlatform "armbian"; then
+        __platform_flags+=(gles gles3 gles32)
+    else
+        __platform_flags+=(x11 gles gles3 gles32)
+    fi
 }
 
-function platform_rockchip64() {
+function platform_rk3399() {
     cpu_armv8 "cortex-a72.cortex-a53"
     __platform_flags+=(gles gles3 gles31)
 }
 
-function platform_sun50iw6() {
+function platform_rk3566() {
+    cpu_armv8 "cortex-a55"
+    __platform_flags+=(gles gles3 gles32)
+}
+
+function platform_sun50iw2() {
     cpu_armv8 "cortex-a53"
     __platform_flags+=(gles)
 }
 
+function platform_sun50iw6() {
+    cpu_armv8 "cortex-a53"
+    __platform_flags+=(gles gles3 gles32)
+}
+
 function platform_sun50iw9() {
     cpu_armv8 "cortex-a53"
-    __platform_flags+=(gles)
+    __platform_flags+=(gles gles3 gles32)
 }
 
 function platform_sun8i() {
