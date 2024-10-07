@@ -20,6 +20,17 @@ function depends_audiosettings() {
     fi
 }
 
+function gui_armbian-audiosettings() {
+    # Check if there are any ALSA sound cards detected
+    if [[ `aplay -ql | wc -l` < 1 ]]; then
+        printMsgs "dialog" "No sound cards detected or onboard audio disabled"
+        return
+    fi
+
+    # Auto-configure dmixer
+    _alsa_audiosettings $hw
+}
+
 function _autoconfigure_dmix_audiosettings() {
     local hw=$1  # Pass the sound card hardware number
 
@@ -64,25 +75,6 @@ EOF
     # Apply the new ALSA configuration
     alsactl store
     printMsgs "dialog" "Audio output configured with dmix for sound card hw:$hw"
-}
-
-function gui_armbian-audiosettings() {
-    # Check if there are any ALSA sound cards detected
-    if [[ `aplay -ql | wc -l` < 1 ]]; then
-        printMsgs "dialog" "No sound cards detected or onboard audio disabled"
-        return
-    fi
-
-    # Get the sound card hardware number (hw:X)
-    local hw=$(aplay -l | grep "^card" | awk '{print $2}' | head -n 1)
-
-    if [[ -z "$hw" ]]; then
-        printMsgs "dialog" "No sound card detected."
-        return
-    fi
-
-    # Auto-configure dmixer
-    _autoconfigure_dmix_audiosettings $hw
 }
 
 function _reset_alsa_audiosettings() {
