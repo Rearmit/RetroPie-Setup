@@ -50,6 +50,7 @@ pcm.dmixer  {
   ipc_key 1024
   slave {
     pcm "hw:$hw,0"
+    channels 2          # Ensures stereo output
     period_time 0
     period_size 1024
     buffer_size 4096
