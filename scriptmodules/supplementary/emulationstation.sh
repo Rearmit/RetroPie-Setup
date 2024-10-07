@@ -157,9 +157,10 @@ function _get_branch_emulationstation() {
 
 function sources_emulationstation() {
     gitPullOrClone
-    applyPatch "$md_data/emulationstation-100.02-PR725-background-music-player.patch"
-    applyPatch "$md_data/emulationstation-100.03-sound-menu.patch"
-    applyPatch "$md_data/emulationstation-100.04-music-folder-paths.patch"
+    if isPlatform "armbian"; then
+        applyPatch "$scriptdir/scriptmodules/$md_type/emulationstation-rearmit/emulationstation-100.02-PR725-background-music-player.patch"
+        applyPatch "$scriptdir/scriptmodules/$md_type/emulationstation-rearmit/emulationstation-100.03-sound-menu.patch"
+    fi
 }
 
 function build_emulationstation() {
@@ -306,6 +307,9 @@ function remove_emulationstation() {
     if isPlatform "x11"; then
         rm -rfv "/usr/local/share/icons/retropie.svg" "/usr/local/share/applications/retropie.desktop"
     fi
+    if isPlatform "armbian"; then
+        rm -r "$romdir/music"
+    fi
 }
 
 function configure_emulationstation() {
@@ -327,6 +331,11 @@ function configure_emulationstation() {
     copy_inputscripts_emulationstation
 
     install_launch_emulationstation
+
+    if isPlatform "armbian"; then
+        mkdir -p "$datadir/musics"
+        cp -r "$scriptdir/scriptmodules/$md_type/emulationstation-rearmit/musics"* "$datadir"
+    fi
 
     mkdir -p "/etc/emulationstation"
 
