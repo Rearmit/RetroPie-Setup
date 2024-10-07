@@ -156,6 +156,9 @@ function _get_branch_emulationstation() {
 
 function sources_emulationstation() {
     gitPullOrClone
+    applyPatch "$md_data/emulationstation-100.02-PR725-background-music-player.patch"
+    applyPatch "$md_data/emulationstation-100.03-sound-menu.patch"
+    applyPatch "$md_data/emulationstation-100.04-music-folder-paths.patch"
 }
 
 function build_emulationstation() {
