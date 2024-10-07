@@ -66,7 +66,7 @@ EOF
     printMsgs "dialog" "Audio output configured with dmix for sound card hw:$hw"
 }
 
-function gui_audiosettings() {
+function gui_armbian-audiosettings() {
     # Check if there are any ALSA sound cards detected
     if [[ `aplay -ql | wc -l` < 1 ]]; then
         printMsgs "dialog" "No sound cards detected or onboard audio disabled"
