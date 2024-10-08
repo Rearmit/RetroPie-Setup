@@ -427,7 +427,7 @@ if tr -d '\0' < /proc/device-tree/compatible | grep -Eq raspberrypi,[0-4]; then
     SDL_VIDEO_RPI_SCALE_MODE=1
     # If a Raspberry Pi (<5) device is used, lower resolution to 320x240 and enable SDL dispmanx scaling mode 1
 fi
-if [[ -e /opt/vero3/lib/libMali.so  ]]; then
+if [[ -e /opt/vero3/lib/libMali.so  ]] || [[ -f /etc/armbian-release ]]; then
     SDL_AUDIODRIVER=alsa
 fi
 
