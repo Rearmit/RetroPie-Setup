@@ -27,13 +27,14 @@ function sources_flycast() {
 }
 
 function build_flycast() {
-    local params=("-DWITH_SYSTEM_ZLIB=ON -DCMAKE_BUILD_TYPE=Release")
+    local params=("-DWITH_SYSTEM_ZLIB=ON -DCMAKE_BUILD_TYPE=Release -DLIBRETRO=OFF -DUSE_HOST_SDL=ON -DUSE_DX9=OFF -DUSE_DX11=OFF")
 
     if isPlatform "gles3"; then
-            params+=("-DUSE_GLES=ON")
+            params+=("-DUSE_GLES=ON -DUSE_GLES2=OFF -DUSE_OPENGL=ON")
     elif isPlatform "gles"; then
-            params+=("-DUSE_GLES2=ON")
+            params+=("-DUSE_GLES2=ON -DUSE_GLES=OFF ")
     fi
+    isPlatform "gl" && params+=("-DUSE_OPENGL=ON") || params+=("-DUSE_OPENGL=OFF")
     isPlatform "vulkan" && params+=("-DUSE_VULKAN=ON") || params+=("-DUSE_VULKAN=OFF")
 
     rm -fr build && mkdir build
