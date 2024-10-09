@@ -337,7 +337,7 @@ function configure_mupen64plus() {
     fi
 
     # RPI main/GLideN64 settings
-    if isPlatform "rpi"; then
+    if isPlatform "rpi" || isPlatform "armbian"; then
         iniConfig " = " "" "$config"
         # VSync is mandatory for good performance on KMS
         if isPlatform "kms"; then
