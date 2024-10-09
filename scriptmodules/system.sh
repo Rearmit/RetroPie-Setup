@@ -431,7 +431,7 @@ function get_armbian_model() {
             esac
             ;;
         "rk35xx")
-            case "BOOT_SOC" in
+            case "$BOOT_SOC" in
                 "rk3566")
                 __platform="rk3566"
                 ;;
