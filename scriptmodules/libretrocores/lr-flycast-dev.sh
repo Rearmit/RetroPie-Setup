@@ -31,7 +31,7 @@ function build_lr-flycast-dev() {
 
     if isPlatform "gles3"; then
             params+=("-DUSE_GLES=ON")
-    elif isPlatform "gles2"; then
+    elif isPlatform "gles"; then
             params+=("-DUSE_GLES2=ON")
     fi
     isPlatform "vulkan" && params+=("-DUSE_VULKAN=ON") || params+=("-DUSE_VULKAN=OFF")

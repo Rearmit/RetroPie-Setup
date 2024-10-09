@@ -26,7 +26,7 @@ function sources_smw() {
 
 function build_smw() {
     local params=(-DUSE_SDL2_LIBS=ON -DSMW_INSTALL_PORTABLE=ON)
-    isPlatform "gles2" && params+=(-DSDL2_FORCE_GLES=ON)
+    isPlatform "gles" && params+=(-DSDL2_FORCE_GLES=ON)
     rm -fr build
     mkdir -p build && cd build
     cmake .. "${params[@]}"
