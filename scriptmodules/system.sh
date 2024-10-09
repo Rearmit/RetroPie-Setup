@@ -430,7 +430,7 @@ function get_armbian_model() {
                 ;;
             esac
             ;;
-        "rk35xx")
+        "rk35xx"|"rockchip-rk3588")
             case "$BOOT_SOC" in
                 "rk3566")
                 __platform="rk3566"
@@ -449,7 +449,7 @@ function get_armbian_model() {
         "sun50iw6")
             __platform="sun50iw6"
             ;;
-        "sun50iw9")
+        sun50iw9*)
             __platform="sun50iw9"
             ;;
         "sun8i")
