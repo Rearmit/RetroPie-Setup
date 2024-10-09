@@ -32,9 +32,8 @@ function build_flycast() {
     if isPlatform "gles3"; then
             params+=("-DUSE_GLES=ON -DUSE_GLES2=OFF -DUSE_OPENGL=ON")
     elif isPlatform "gles"; then
-            params+=("-DUSE_GLES2=ON -DUSE_GLES=OFF ")
+            params+=("-DUSE_GLES2=ON -DUSE_GLES=OFF -DUSE_OPENGL=ON")
     fi
-    isPlatform "gl" && params+=("-DUSE_OPENGL=ON") || params+=("-DUSE_OPENGL=OFF")
     isPlatform "vulkan" && params+=("-DUSE_VULKAN=ON") || params+=("-DUSE_VULKAN=OFF")
 
     rm -fr build && mkdir build
