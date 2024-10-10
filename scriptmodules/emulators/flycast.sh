@@ -78,4 +78,14 @@ function configure_flycast() {
     mkUserDir "$md_conf_root/dreamcast/flycast"
 
     chown -R $user:$user "$md_conf_root/dreamcast/flycast"
+
+    local config="$md_conf_root/dreamcast/flycast/emu.cfg"
+    iniConfig " = " "" "$config"
+
+    if ! grep -q "\[window\]" "$config"; then
+        echo "[window]" >> "$config"
+        iniSet "fullscreen" "yes"
+        iniSet "height" "600"
+        iniSet "width" "800"
+    fi
 }

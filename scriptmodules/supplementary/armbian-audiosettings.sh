@@ -138,4 +138,5 @@ EOF
     local dest="$home/.asoundrc"
     mv "$tmpfile" "$dest"
     chmod 644 "$dest"
+    chown $user:$user "$dest"
 }
