@@ -1,0 +1,104 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4bc0e45..01ca7ba 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 2.8)
+ option(GLES "Set to ON if targeting Embedded OpenGL" ${GLES})
+ option(GL "Set to ON if targeting Desktop OpenGL" ${GL})
+ option(RPI "Set to ON to enable the Raspberry PI memory and audio options" ${RPI})
++option(ARMBIAN "Set to ON to enable the Armbian memory and audio options" ${ARMBIAN})
+ option(OMX "Set to On to enable OMXPlayer for video snapshots" ${OMX})
+ option(CEC "Set to ON to enable CEC" ${CEC})
+ option(PROFILING "Set to ON to enable profiling" ${PROFILING})
+@@ -119,6 +120,10 @@ if(DEFINED BCMHOST OR RPI)
+     add_definitions(-D_RPI_)
+ endif()
+ 
++if(DEFINED ARMBIAN)
++    add_definitions(-D_ARMBIAN_)
++endif()
++
+ if(OMX)
+     add_definitions(-D_OMX_)
+ endif()
+diff --git a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+index b3150db..c10f9cf 100644
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -87,63 +87,8 @@ void GuiMenu::openSoundSettings()
+ {
+ 	auto s = new GuiSettings(mWindow, "SOUND SETTINGS");
+ 
+-	// volume
+-	auto volume = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+-	volume->setValue((float)VolumeControl::getInstance()->getVolume());
+-	s->addWithLabel("SYSTEM VOLUME", volume);
+-	s->addSaveFunc([volume] { VolumeControl::getInstance()->setVolume((int)Math::round(volume->getValue())); });
+-
+ 	if (UIModeController::getInstance()->isUIModeFull())
+ 	{
+-#if defined(__linux__)
+-		// audio card
+-		auto audio_card = std::make_shared< OptionListComponent<std::string> >(mWindow, "AUDIO CARD", false);
+-		std::vector<std::string> audio_cards;
+-		audio_cards.push_back("default");
+-		audio_cards.push_back("sysdefault");
+-		audio_cards.push_back("dmix");
+-		audio_cards.push_back("hw");
+-		audio_cards.push_back("plughw");
+-		audio_cards.push_back("null");
+-		if (Settings::getInstance()->getString("AudioCard") != "") {
+-			if(std::find(audio_cards.begin(), audio_cards.end(), Settings::getInstance()->getString("AudioCard")) == audio_cards.end()) {
+-				audio_cards.push_back(Settings::getInstance()->getString("AudioCard"));
+-			}
+-		}
+-		for(auto ac = audio_cards.cbegin(); ac != audio_cards.cend(); ac++)
+-			audio_card->add(*ac, *ac, Settings::getInstance()->getString("AudioCard") == *ac);
+-		s->addWithLabel("AUDIO CARD", audio_card);
+-		s->addSaveFunc([audio_card] {
+-			Settings::getInstance()->setString("AudioCard", audio_card->getSelected());
+-			VolumeControl::getInstance()->deinit();
+-			VolumeControl::getInstance()->init();
+-		});
+-
+-		// volume control device
+-		auto vol_dev = std::make_shared< OptionListComponent<std::string> >(mWindow, "AUDIO DEVICE", false);
+-		std::vector<std::string> transitions;
+-		transitions.push_back("PCM");
+-		transitions.push_back("HDMI");
+-		transitions.push_back("Headphone");
+-		transitions.push_back("Speaker");
+-		transitions.push_back("Master");
+-		transitions.push_back("Digital");
+-		transitions.push_back("Analogue");
+-		if (Settings::getInstance()->getString("AudioDevice") != "") {
+-			if(std::find(transitions.begin(), transitions.end(), Settings::getInstance()->getString("AudioDevice")) == transitions.end()) {
+-				transitions.push_back(Settings::getInstance()->getString("AudioDevice"));
+-			}
+-		}
+-		for(auto it = transitions.cbegin(); it != transitions.cend(); it++)
+-			vol_dev->add(*it, *it, Settings::getInstance()->getString("AudioDevice") == *it);
+-		s->addWithLabel("AUDIO DEVICE", vol_dev);
+-		s->addSaveFunc([vol_dev] {
+-			Settings::getInstance()->setString("AudioDevice", vol_dev->getSelected());
+-			VolumeControl::getInstance()->deinit();
+-			VolumeControl::getInstance()->init();
+-		});
+-#endif
+-
+ 		// disable sounds
+ 		auto sounds_enabled = std::make_shared<SwitchComponent>(mWindow);
+ 		sounds_enabled->setState(Settings::getInstance()->getBool("EnableSounds"));
+diff --git a/es-core/src/Settings.cpp b/es-core/src/Settings.cpp
+index aeb1057..51c7c4c 100644
+--- a/es-core/src/Settings.cpp
++++ b/es-core/src/Settings.cpp
+@@ -91,7 +91,7 @@ void Settings::setDefaults()
+ 	mBoolMap["SystemSleepTimeHintDisplayed"] = false;
+ 	mIntMap["ScraperResizeWidth"] = 400;
+ 	mIntMap["ScraperResizeHeight"] = 0;
+-	#ifdef _RPI_
++	#if defined(_RPI_) || defined(_ARMBIAN_)
+ 		mIntMap["MaxVRAM"] = 80;
+ 	#else
+ 		mIntMap["MaxVRAM"] = 100;
