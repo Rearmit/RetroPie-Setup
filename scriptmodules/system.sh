@@ -424,7 +424,7 @@ function get_armbian_model() {
     BOARDFAMILY="$(grep -oP "BOARDFAMILY=\K.*" /etc/armbian-release)"
     case "$BOARDFAMILY" in
         "rockchip64")
-            $BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
+            BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
                 "rk3399")
                 __platform="rk3399"
@@ -432,7 +432,7 @@ function get_armbian_model() {
             esac
             ;;
         "rk35xx"|"rockchip-rk3588")
-            $BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
+            BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
                 "rk3566")
                 __platform="rk3566"
