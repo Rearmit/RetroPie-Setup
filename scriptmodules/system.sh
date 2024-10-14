@@ -421,9 +421,10 @@ function get_armbian_video() {
 }
 
 function get_armbian_model() {
-    source /etc/armbian-release
+    BOARDFAMILY="$(grep -oP "BOARDFAMILY=\K.*" /etc/armbian-release)"
     case "$BOARDFAMILY" in
         "rockchip64")
+            $BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
                 "rk3399")
                 __platform="rk3399"
@@ -431,6 +432,7 @@ function get_armbian_model() {
             esac
             ;;
         "rk35xx"|"rockchip-rk3588")
+            $BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
                 "rk3566")
                 __platform="rk3566"
@@ -568,7 +570,11 @@ function get_platform() {
 }
 
 function set_platform_defaults() {
-    __default_opt_flags="-O2"
+    if isPlatform "armbian"; then
+        __default_opt_flags="-O3"
+    else
+        __default_opt_flags="-O2"
+    fi
 
     # add platform name and 32bit/64bit to platform flags
     __platform_flags=("$__platform" "$(getconf LONG_BIT)bit")
