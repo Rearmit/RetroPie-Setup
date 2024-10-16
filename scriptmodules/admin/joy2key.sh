@@ -19,7 +19,7 @@ function _update_hook_joy2key() {
 }
 
 function depends_joy2key() {
-    local depends=(python3-urwid)
+    local depends=(python3-urwid python3-uinput)
     # 'python3-sdl2' might not be available
     # it's packaged in Debian starting with version 11 (Bullseye)
     local p_ver
@@ -78,6 +78,13 @@ esac
 exit 0
 _EOF_
     chmod +x "$wrapper"
+    if ! grep -q "uinput" /etc/modules; then
+        addLineToFile "uinput" "/etc/modules"
+    fi
+    modprobe uinput
+
+    # make sure the install user is part of 'input' group
+    usermod -a -G input "$__user"
 
     joy2keyStart
 }
