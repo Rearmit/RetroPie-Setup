@@ -454,6 +454,9 @@ function get_armbian_model() {
         sun50iw9*)
             __platform="sun50iw9"
             ;;
+        "sun7i")
+            __platform="sun7i"
+            ;;
         "sun8i")
             __platform="sun8i"
             ;;
@@ -778,6 +781,11 @@ function platform_sun50iw6() {
 function platform_sun50iw9() {
     cpu_armv8 "cortex-a53"
     __platform_flags+=(gles gles3 gles32)
+}
+
+function platform_sun7i() {
+    cpu_armv7 "cortex-a7"
+    __platform_flags+=(gles)
 }
 
 function platform_sun8i() {
