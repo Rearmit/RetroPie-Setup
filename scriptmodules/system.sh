@@ -455,22 +455,15 @@ function get_armbian_model() {
                 ;;
             esac
             ;;
-        "sun50iw1")
-            __platform="sun50iw1"
+        "sun50iw1"|"sun50iw2")
+            __platform="sun50i"
             ;;
-        "sun50iw2")
-            __platform="sun50iw2"
+        sun50iw9*|"sun50iw6")
+            __platform="sun50i-gles3"
+            # only set __has_binaries if not already set
+            [[ -z "$__has_binaries" ]] && __has_binaries=1
             ;;
-        "sun50iw6")
-            __platform="sun50iw6"
-            ;;
-        sun50iw9*)
-            __platform="sun50iw9"
-            ;;
-        "sun7i")
-            __platform="sun7i"
-            ;;
-        "sun8i")
+        "sun8i"|"sun7i")
             __platform="sun8i"
             ;;
     esac
@@ -776,29 +769,14 @@ function platform_rk3566() {
     __platform_flags+=(gles gles3 gles32)
 }
 
-function platform_sun50iw1() {
+function platform_sun50i() {
     cpu_armv8 "cortex-a53"
     __platform_flags+=(gles)
 }
 
-function platform_sun50iw2() {
-    cpu_armv8 "cortex-a53"
-    __platform_flags+=(gles)
-}
-
-function platform_sun50iw6() {
+function platform_sun50i-gles3() {
     cpu_armv8 "cortex-a53"
     __platform_flags+=(gles gles3 gles32)
-}
-
-function platform_sun50iw9() {
-    cpu_armv8 "cortex-a53"
-    __platform_flags+=(gles gles3 gles32)
-}
-
-function platform_sun7i() {
-    cpu_armv7 "cortex-a7"
-    __platform_flags+=(gles)
 }
 
 function platform_sun8i() {
