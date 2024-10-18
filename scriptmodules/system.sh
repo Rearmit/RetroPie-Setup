@@ -64,8 +64,13 @@ function conf_binary_vars() {
     [[ -z "$__has_binaries" ]] && __has_binaries=0
 
     # set location of binary downloads
-    __binary_host="files.retropie.org.uk"
-    __binary_base_url="https://$__binary_host/binaries"
+    if isPlatform "armbian"; then
+        __binary_host="rearm.it/packages"
+        __binary_base_url="https://$__binary_host/binaries"
+    else
+        __binary_host="files.retropie.org.uk"
+        __binary_base_url="https://$__binary_host/binaries"
+    fi
 
     __binary_path="$__os_codename/$__platform"
     isPlatform "kms" && __binary_path+="/kms"
@@ -74,14 +79,22 @@ function conf_binary_vars() {
     __archive_url="https://files.retropie.org.uk/archives"
 
     # set the gpg key used by RetroPie
-    __gpg_retropie_key="retropieproject@gmail.com"
+    if isPlatform "armbian"; then
+        __gpg_retropie_key="gleam2003@msn.com"
+    else
+        __gpg_retropie_key="retropieproject@gmail.com"
+    fi
 
     # if __gpg_signing_key is not set, set to __gpg_retropie_key
     [[ ! -v __gpg_signing_key ]] && __gpg_signing_key="$__gpg_retropie_key"
 
     # if the RetroPie public key is not installed, install it.
     if ! gpg --list-keys "$__gpg_retropie_key" &>/dev/null; then
-        gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys DC9D77FF8208FFC51D8F50CCF1B030906A3B0D31
+        if isPlatform "armbian"; then
+            gpg --import "$home/RetroPie-Setup/public.key"
+        else
+            gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys DC9D77FF8208FFC51D8F50CCF1B030906A3B0D31
+        fi
     fi
 }
 
