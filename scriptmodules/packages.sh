@@ -456,7 +456,7 @@ function rp_hasBinary() {
 
     # binary blacklist for armv7 Debian/OSMC due to GCC ABI incompatibility with
     # threaded C++ apps on Raspbian (armv6 userland)
-    if [[ "$__os_id" != "Raspbian" ]] && ! isPlatform "armv6"; then
+    if [[ "$__os_id" != "Raspbian" ]] && ! isPlatform "armv6" && ! isPlatform "armbian"; then
         case "$id" in
             emulationstation|lzdoom|lr-dinothawr|lr-ppsspp|ppsspp)
                 return 1
