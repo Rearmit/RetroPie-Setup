@@ -157,9 +157,6 @@ function _get_branch_emulationstation() {
 
 function sources_emulationstation() {
     gitPullOrClone
-    if isPlatform "armbian"; then
-        applyPatch "$scriptdir/scriptmodules/$md_type/emulationstation-armbian/1000-es-armbian.patch"
-    fi
 }
 
 function build_emulationstation() {
@@ -190,9 +187,6 @@ function build_emulationstation() {
     fi
     if isPlatform "dispmanx"; then
         params+=(-DOMX=On)
-    fi
-    if isPlatform "armbian"; then
-        params+=(-DARMBIAN=On)
     fi
 
     rpSwap on 1000
