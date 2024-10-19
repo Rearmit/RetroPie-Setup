@@ -16,9 +16,7 @@ rp_module_flags="!all rpi armbian"
 
 function depends_audiosettings() {
     if [[ "$md_mode" == "install" ]]; then
-        local depends=(alsa-utils)
-        isPlatform "armbian" && depends+=(pulseaudio pamixer)
-        getDepends "${depends[@]}"
+        getDepends "alsa-utils"
     fi
 }
 
