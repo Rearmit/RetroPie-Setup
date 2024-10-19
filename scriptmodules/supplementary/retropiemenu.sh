@@ -100,11 +100,14 @@ function configure_retropiemenu()
     local i
     for i in "${!files[@]}"; do
         case "${files[i]}" in
-            audiosettings|raspiconfig|splashscreen)
+            audiosettings|splashscreen)
+                ! isPlatform "rpi" && ! isPlatform "armbian" && continue
+                ;;
+            raspiconfig)
                 ! isPlatform "rpi" && continue
                 ;;
             wifi)
-                [[ "$__os_id" != "Raspbian" ]] && continue
+                [[ "$__os_id" != "Raspbian" ]] && ! isPlatform "armbian" && continue
         esac
 
         file="${files[i]}"
