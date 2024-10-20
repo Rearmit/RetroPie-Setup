@@ -46,7 +46,7 @@ function _get_repos_mupen64plus() {
     if isPlatform "gles"; then
         ! isPlatform "rpi" && repos+=('mupen64plus mupen64plus-video-glide64mk2 master')
         if isPlatform "32bit"; then
-            repos+=('ricrpi mupen64plus-video-gles2rice pandora-backport')
+            ! isPlatform "armbian" && repos+=('ricrpi mupen64plus-video-gles2rice pandora-backport')
             repos+=('ricrpi mupen64plus-video-gles2n64 master')
         fi
     fi
@@ -220,7 +220,7 @@ function build_mupen64plus() {
     if isPlatform "gles"; then
         ! isPlatform "rpi" && md_ret_require+=('mupen64plus-video-glide64mk2/projects/unix/mupen64plus-video-glide64mk2.so')
         if isPlatform "32bit"; then
-            md_ret_require+=('mupen64plus-video-gles2rice/projects/unix/mupen64plus-video-rice.so')
+            ! isPlatform "armbian" && md_ret_require+=('mupen64plus-video-gles2rice/projects/unix/mupen64plus-video-rice.so')
             md_ret_require+=('mupen64plus-video-gles2n64/projects/unix/mupen64plus-video-n64.so')
         fi
     fi
