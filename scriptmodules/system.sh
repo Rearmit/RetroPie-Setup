@@ -91,7 +91,7 @@ function conf_binary_vars() {
     # if the RetroPie public key is not installed, install it.
     if ! gpg --list-keys "$__gpg_retropie_key" &>/dev/null; then
         if isPlatform "armbian"; then
-            gpg --import "$home/RetroPie-Setup/public.key"
+            gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C41B37F3E3653E66D646AC9FFBE5D945920F99BF
         else
             gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys DC9D77FF8208FFC51D8F50CCF1B030906A3B0D31
         fi
