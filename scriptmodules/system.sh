@@ -65,7 +65,7 @@ function conf_binary_vars() {
 
     # set location of binary downloads
     if isPlatform "armbian"; then
-        __binary_host="rearm.it/packages"
+        __binary_host="rearm.it"
         __binary_base_url="https://$__binary_host/binaries"
     else
         __binary_host="files.retropie.org.uk"
