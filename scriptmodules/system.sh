@@ -579,11 +579,7 @@ function get_platform() {
 }
 
 function set_platform_defaults() {
-    if isPlatform "armbian"; then
-        __default_opt_flags="-O3"
-    else
-        __default_opt_flags="-O2"
-    fi
+    __default_opt_flags="-O2"
 
     # add platform name and 32bit/64bit to platform flags
     __platform_flags=("$__platform" "$(getconf LONG_BIT)bit")
