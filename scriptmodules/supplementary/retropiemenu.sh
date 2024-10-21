@@ -44,6 +44,7 @@ function configure_retropiemenu()
 
     # add the gameslist / icons
     local files=(
+        'armbian'
         'audiosettings'
         'bluetooth'
         'configedit'
@@ -60,6 +61,7 @@ function configure_retropiemenu()
     )
 
     local names=(
+        'Armbian'
         'Audio'
         'Bluetooth'
         'Configuration Editor'
@@ -76,6 +78,7 @@ function configure_retropiemenu()
     )
 
     local descs=(
+        'Armbian Config utility'
         'Configure audio settings. Choose default of auto, 3.5mm jack, or HDMI. Mixer controls, and apply default settings.'
         'Register and connect to Bluetooth devices. Unregister and remove devices, and display registered and connected devices.'
         'Change common RetroArch options, and manually edit RetroArch configs, global configs, and non-RetroArch configs.'
@@ -100,6 +103,9 @@ function configure_retropiemenu()
     local i
     for i in "${!files[@]}"; do
         case "${files[i]}" in
+            armbian)
+                ! isPlatform "armbian" && continue
+                ;;
             audiosettings|splashscreen)
                 ! isPlatform "rpi" && ! isPlatform "armbian" && continue
                 ;;
@@ -137,6 +143,9 @@ function launch_retropiemenu() {
     local no_ext="${basename%.rp}"
     joy2keyStart
     case "$basename" in
+        armbian.rp)
+            armbian-config
+            ;;
         retroarch.rp)
             joy2keyStop
             cp "$configdir/all/retroarch.cfg" "$configdir/all/retroarch.cfg.bak"
