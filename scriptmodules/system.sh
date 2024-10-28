@@ -466,6 +466,10 @@ function get_armbian_model() {
         "sun8i"|"sun7i")
             __platform="sun8i"
             ;;
+        "meson-g12a")
+            __platform="sun50i-gles3"
+            # only set __has_binaries if not already set
+            [[ -z "$__has_binaries" ]] && __has_binaries=1
     esac
 }
 
