@@ -17,6 +17,10 @@ rp_module_repo="git https://github.com/libretro/snes9x.git master"
 rp_module_section="main armv6=opt armv7=opt"
 rp_module_flags="nodistcc"
 
+function depends_lr-snes9x() {
+    getDepends zlib1g-dev
+}
+
 function sources_lr-snes9x() {
     gitPullOrClone
 }
