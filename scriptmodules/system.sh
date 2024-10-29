@@ -440,7 +440,7 @@ function get_armbian_model() {
             BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
                 "rk3399")
-                __platform="rk3399"
+                __platform="arm64_cortex_a72_a53_gles3"
                 ;;
             esac
             ;;
@@ -448,28 +448,24 @@ function get_armbian_model() {
             BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
                 "rk3566")
-                __platform="rk3566"
+                __platform="arm64_cortex_a55_gles3"
                 ;;
                 "rk3588")
-                __platform="rk3588"
+                __platform="arm64_cortex_a76_a55_gles3"
                 ;;
             esac
             ;;
         "sun50iw1"|"sun50iw2")
-            __platform="sun50i"
+            __platform="arm64_cortex_a53_gles2"
             ;;
-        sun50iw9*|"sun50iw6")
-            __platform="sun50i-gles3"
+        sun50iw9*|"sun50iw6"|"meson-g12a")
+            __platform="arm64_cortex_a53_gles3"
             # only set __has_binaries if not already set
             [[ -z "$__has_binaries" ]] && __has_binaries=1
             ;;
         "sun8i"|"sun7i")
-            __platform="sun8i"
+            __platform="armv7_cortex_a7_gles2"
             ;;
-        "meson-g12a")
-            __platform="sun50i-gles3"
-            # only set __has_binaries if not already set
-            [[ -z "$__has_binaries" ]] && __has_binaries=1
     esac
 }
 
@@ -752,34 +748,35 @@ function platform_imx8mm() {
 
 function platform_rk3588() {
     cpu_armv8 "cortex-a76.cortex-a55"
-    if isPlatform "armbian"; then
-        __platform_flags+=(gles gles3 gles32)
-    else
-        __platform_flags+=(x11 gles gles3 gles32)
-    fi
+    __platform_flags+=(x11 gles gles3 gles32)
 }
 
-function platform_rk3399() {
+function platform_arm64_cortex_a76_a55_gles3() {
+    cpu_armv8 "cortex-a76.cortex-a55"
+    __platform_flags+=(gles gles3 gles32)
+}
+
+function platform_arm64_cortex_a72_a53_gles3() {
     cpu_armv8 "cortex-a72.cortex-a53"
     __platform_flags+=(gles gles3 gles31)
 }
 
-function platform_rk3566() {
+function platform_arm64_cortex_a55_gles3() {
     cpu_armv8 "cortex-a55"
     __platform_flags+=(gles gles3 gles32)
 }
 
-function platform_sun50i() {
+function platform_arm64_cortex_a53_gles2() {
     cpu_armv8 "cortex-a53"
     __platform_flags+=(gles)
 }
 
-function platform_sun50i-gles3() {
+function platform_arm64_cortex_a53_gles3() {
     cpu_armv8 "cortex-a53"
     __platform_flags+=(gles gles3 gles32)
 }
 
-function platform_sun8i() {
+function platform_armv7_cortex_a7_gles2() {
     cpu_armv7 "cortex-a7"
     __platform_flags+=(gles)
 }

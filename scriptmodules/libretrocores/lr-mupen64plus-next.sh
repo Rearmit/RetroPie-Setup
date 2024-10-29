@@ -28,6 +28,7 @@ function depends_lr-mupen64plus-next() {
 
 function sources_lr-mupen64plus-next() {
     gitPullOrClone
+    applyPatch "$md_data/0001-add-platform.patch"
 }
 
 function build_lr-mupen64plus-next() {

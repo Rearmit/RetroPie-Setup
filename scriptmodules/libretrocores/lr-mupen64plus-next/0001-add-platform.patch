@@ -1,0 +1,55 @@
+diff --git a/Makefile b/Makefile
+index 481e8b9..811f8d2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -366,6 +366,50 @@ else ifneq (,$(findstring arm64_cortex_a53_gles3,$(platform)))
+    COREFLAGS += -DOS_LINUX
+    ASFLAGS = -f elf64 -d ELF_TYPE
+ 
++# Generic AArch64 Cortex-A53 GLES 3.0 target
++else ifneq (,$(findstring arm64_cortex_a55_gles3,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
++   GLES3 = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# Generic AArch64 Cortex-A72/A53 GLES 3.0 target
++else ifneq (,$(findstring arm64_cortex_a72_a53_gles3,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mcpu=cortex-a72.cortex-a53 -mtune=cortex-a72.cortex-a53
++   GLES3 = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# Generic AArch64 Cortex-A76/A55 GLES 3.0 target
++else ifneq (,$(findstring arm64_cortex_a76_a55_gles3,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
++   GLES3 = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
++
++# Generic Armv7 Cortex-A7 GLES 2.0 target
++else ifneq (,$(findstring armv7_cortex_a7_gles2,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := arm
++   CPUFLAGS += -mcpu=cortex-a7 -mtune=cortex-a7
++   GLES3 = 0
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf -d ELF_TYPE
++
+ # Rockchip RK3288 e.g. Asus Tinker Board / RK3328 e.g. PINE64 Rock64 / RK3399 e.g. PINE64 RockPro64 - 32-bit userspace
+ else ifneq (,$(findstring RK,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.so
