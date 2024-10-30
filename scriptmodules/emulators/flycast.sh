@@ -18,7 +18,7 @@ rp_module_section="exp"
 rp_module_flags="!armv6 !videocore !:\$__gcc_version:-lt:9"
 
 function depends_flycast() {
-    local depends=(zlib1g-dev libgl-dev cmake)
+    local depends=(zlib1g-dev libgl-dev cmake libxext-dev)
     getDepends "${depends[@]}"
 }
 
