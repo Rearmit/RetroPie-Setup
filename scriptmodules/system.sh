@@ -436,7 +436,7 @@ function get_armbian_video() {
 function get_armbian_model() {
     BOARDFAMILY="$(grep -oP "BOARDFAMILY=\K.*" /etc/armbian-release)"
     case "$BOARDFAMILY" in
-        "rockchip64")
+        rockchip64)
             BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
                 "rk3399")
@@ -444,29 +444,32 @@ function get_armbian_model() {
                 ;;
             esac
             ;;
-        "rk35xx"|"rockchip-rk3588")
+        rk35xx|rockchip-rk3588)
             BOOT_SOC="$(grep -oP "BOOT_SOC=\K.*" /etc/armbian-release)"
             case "$BOOT_SOC" in
-                "rk3566")
+                rk3566)
                 __platform="arm64_cortex_a55_gles3"
                 ;;
-                "rk3588")
+                rk3588)
                 __platform="arm64_cortex_a76_a55_gles3"
                 ;;
             esac
             ;;
-        "sun50iw1"|"sun50iw2")
+        sun50iw1|sun50iw2)
             __platform="arm64_cortex_a53_gles2"
             ;;
-        sun50iw9*|"sun50iw6"|"meson-g12a")
+        sun50iw9*|sun50iw6|meson-g12a)
             __platform="arm64_cortex_a53_gles3"
-            # only set __has_binaries if not already set
-            [[ -z "$__has_binaries" ]] && __has_binaries=1
             ;;
-        "sun8i"|"sun7i")
+        sun8i|sun7i)
             __platform="armv7_cortex_a7_gles2"
             ;;
     esac
+
+    if [[ ! -z "$__platform" ]]; then
+        # only set __has_binaries if not already set
+        [[ -z "$__has_binaries" ]] && __has_binaries=1
+    fi
 }
 
 function get_platform() {
