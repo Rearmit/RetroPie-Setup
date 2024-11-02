@@ -756,7 +756,7 @@ function platform_rk3588() {
 
 function platform_arm64_cortex_a76_a55_gles3() {
     cpu_armv8 "cortex-a76.cortex-a55"
-    __platform_flags+=(gles gles3 gles32)
+    __platform_flags+=(gles gles3 gles31)
 }
 
 function platform_arm64_cortex_a72_a53_gles3() {
@@ -766,7 +766,7 @@ function platform_arm64_cortex_a72_a53_gles3() {
 
 function platform_arm64_cortex_a55_gles3() {
     cpu_armv8 "cortex-a55"
-    __platform_flags+=(gles gles3 gles32)
+    __platform_flags+=(gles gles3 gles31)
 }
 
 function platform_arm64_cortex_a53_gles2() {
@@ -776,7 +776,7 @@ function platform_arm64_cortex_a53_gles2() {
 
 function platform_arm64_cortex_a53_gles3() {
     cpu_armv8 "cortex-a53"
-    __platform_flags+=(gles gles3 gles32)
+    __platform_flags+=(gles gles3 gles31)
 }
 
 function platform_armv7_cortex_a7_gles2() {
