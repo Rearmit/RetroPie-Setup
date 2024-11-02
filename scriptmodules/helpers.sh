@@ -262,8 +262,7 @@ function _mapPackage() {
                     fi
                 fi
             elif isPlatform "armbian"; then
-                local board_family="$(grep -oP "BOARDFAMILY=\K.*" /etc/armbian-release)"
-                local kernel_target="$(ls /lib/modules | grep "${board_family}$" | sed -E "s/^[^-]*-([^ ]*${board_family})$/\1/")"
+                local kernel_target="$(ls /lib/modules/ | grep -oP '(?<=-)(current-.*)' | head -n 1)"
                 pkg="linux-headers-${kernel_target}"
             elif [[ -z "$__os_ubuntu_ver" ]]; then
                 pkg="linux-headers-$(uname -r)"
