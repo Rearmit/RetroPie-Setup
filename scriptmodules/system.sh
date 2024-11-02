@@ -455,10 +455,10 @@ function get_armbian_model() {
                 ;;
             esac
             ;;
-        sun50iw1|sun50iw2)
+        sun50iw1|sun50iw2|sun50iw6)
             __platform="arm64_cortex_a53_gles2"
             ;;
-        sun50iw9*|sun50iw6|meson-g12a)
+        sun50iw9*|meson-g12a)
             __platform="arm64_cortex_a53_gles3"
             ;;
         sun8i|sun7i)
