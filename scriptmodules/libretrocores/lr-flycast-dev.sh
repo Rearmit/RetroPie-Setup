@@ -48,6 +48,7 @@ function install_lr-flycast-dev() {
     md_ret_files=(
         'build/flycast_libretro.so'
         'LICENSE'
+        'README.md'
     )
 }
 
